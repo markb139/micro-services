@@ -11,7 +11,6 @@ conn = Connection(
     heartbeat=5
 )
 
-
 @conn.on_connect
 def on_connect(conn):
     # send some test messages
