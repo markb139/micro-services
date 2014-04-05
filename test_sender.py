@@ -31,12 +31,10 @@ def on_connect(conn):
 
         channel.basic_publish(
                 exchange='manage',
-                routing_key='manage.status',
-                body=json.dumps(msg),
+                routing_key='simple.ping',
+                body='',
                 headers={
                     'delivery_mode': 2,
-                    'reply_to': rpc_queue.queue,
-                    'correlation_id': corr_id
                 }
             )
         while True:
