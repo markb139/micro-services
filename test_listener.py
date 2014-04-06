@@ -1,4 +1,4 @@
-from amqp import connection, listener
+from amqp import connection, amqpmanager
 from command import manager
 
 class Manager(object):
@@ -14,7 +14,7 @@ class Manager(object):
 
     def on_connect(self, connection):
         self.manager = manager.CommandManager()
-        self.listener = listener.AMQPListener(connection,self.manager)
+        self.amqp = amqpmanager.AMQPManager(connection, self.manager)
 
 
 m = Manager()

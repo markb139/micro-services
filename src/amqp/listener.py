@@ -4,7 +4,6 @@ class AMQPListener(object):
     def __init__(self, connection, observer):
         self.observer = observer
         self.channel = connection.allocate_channel()
-
         self.channel.basic_consume( queue='manage_q',
                                     no_local=False,
                                     no_ack=False,
@@ -25,5 +24,5 @@ class AMQPListener(object):
             )
 
             message.ack()
-        except:
+        except Exception as err:
             message.reject(requeue=False)

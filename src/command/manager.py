@@ -5,8 +5,8 @@ class CommandManager(object):
         self.loader = Loader()
         self.loader.scan()
 
-    def handle_message(self, message):
-        f = self.loader.handlers.get(message.routing_key,None)
+    def handle_message(self, message, route):
+        f = self.loader.handlers.get(route,None)
         if f:
             if message.body:
                 args = json.loads(message.body)
@@ -14,4 +14,4 @@ class CommandManager(object):
             else:
                 return f()
         else:
-            raise Exception("Couldn't handle handler")
+            raise Exception("Couldn't find handler")

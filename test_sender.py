@@ -31,7 +31,7 @@ def on_connect(conn):
 
         channel.basic_publish(
                 exchange='manage',
-                routing_key='simple.ping',
+                routing_key='f07c2013-3103-4449-ac1b-4b40eb43ef69.simple.ping',
                 body='',
                 headers={
                     'delivery_mode': 2,
