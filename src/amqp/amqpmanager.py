@@ -49,6 +49,7 @@ class AMQPManager(object):
         ]
 
         amqpconfiguration.ensure_bindings(channel, bindings)
+        # start listening to the manage_q queue for management commands
         self.listener = listener.AMQPListener(connection, 'manage_q', self)
         channel.close()
 

@@ -1,6 +1,7 @@
 import json
 
 class AMQPListener(object):
+    """Listen to an AMQP queue"""
     def __init__(self, connection, queue, observer):
         self.observer = observer
         self.channel = connection.allocate_channel()

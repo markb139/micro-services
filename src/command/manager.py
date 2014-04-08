@@ -1,6 +1,8 @@
 import json
 from command.loader import Loader
+
 class CommandManager(object):
+    """Manage loadable commands"""
     def __init__(self):
         self.loader = Loader()
         self.loader.scan()

@@ -47,7 +47,7 @@ class Pinger(Greenlet):
 
     def handle_message(self, message):
         pass
-    
+
 def start():
     g = Pinger()
     g.start()
