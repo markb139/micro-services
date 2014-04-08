@@ -1,10 +1,10 @@
 import json
 
 class AMQPListener(object):
-    def __init__(self, connection, observer):
+    def __init__(self, connection, queue, observer):
         self.observer = observer
         self.channel = connection.allocate_channel()
-        self.channel.basic_consume( queue='manage_q',
+        self.channel.basic_consume( queue=queue,
                                     no_local=False,
                                     no_ack=False,
                                     exclusive=False,
