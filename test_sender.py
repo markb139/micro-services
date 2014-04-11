@@ -26,8 +26,9 @@ def on_connect(conn):
                                     no_local=False,
                                     no_ack=False,
                                     exclusive=False,
-                                    arguments={},
-                                    callback=on_rpc_message)
+                                    arguments={}
+                                    )
+        # callback=on_rpc_message
 
         channel.basic_publish(
                 exchange='manage',
@@ -37,9 +38,9 @@ def on_connect(conn):
                     'delivery_mode': 2,
                 }
             )
-        while True:
-            gevent.sleep(1)
-    #conn.close()
+        #while True:
+        #    gevent.sleep(1)
+    conn.close()
 
 if __name__ == '__main__':
     conn.connect()

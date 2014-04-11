@@ -1,8 +1,13 @@
 import json
+import logging
+import nucleon.amqp.exceptions
+
+logger = logging.getLogger('microservices.amqp.listener')
 
 class AMQPListener(object):
     """Listen to an AMQP queue"""
     def __init__(self, connection, queue, observer):
+        logger.debug("listen to [%s] for [%s]" % (queue,type(observer)))
         self.observer = observer
         self.channel = connection.allocate_channel()
         self.channel.basic_consume( queue=queue,
@@ -12,7 +17,12 @@ class AMQPListener(object):
                                     arguments={},
                                     callback=self.on_message)
 
+    def close(self):
+        self.channel.close()
+
     def on_message(self, message):
+        if type(message) == nucleon.amqp.exceptions.ConnectionError:
+            return
         try:
             ret = self.observer.handle_message(message)
             if message.headers.get('reply_to',None):

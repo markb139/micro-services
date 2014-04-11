@@ -1,10 +1,12 @@
-from amqp import listener
+import logging
 from amqp import amqpconfiguration
+
+logger = logging.getLogger('microservices.amqp.manager')
 
 class AMQPManager(object):
     def __init__(self, connection, observer):
+        logger.debug("observer %s" % type(observer))
         self.observer = observer
-
         channel = connection.allocate_channel()
         exchanges = [{
                 'name' : 'manage',
@@ -50,8 +52,4 @@ class AMQPManager(object):
 
         amqpconfiguration.ensure_bindings(channel, bindings)
         # start listening to the manage_q queue for management commands
-        self.listener = listener.AMQPListener(connection, 'manage_q', self)
         channel.close()
-
-    def handle_message(self, message):
-        self.observer.handle_message(message,message.routing_key)
