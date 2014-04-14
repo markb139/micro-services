@@ -1,5 +1,4 @@
 import uuid
-import gevent
 from gevent import Greenlet
 from amqp import connection, listener
 from amqp import amqpconfiguration
@@ -24,9 +23,13 @@ class PingerAMQPManager(object):
         bindings = [{
                 'queue': self.rpc_queue.queue,
                 'exchange': 'pinger',
-                #'key': self.id + '.#'
-                'key' : '#'
+                'key': self.id + '.#'
             },
+            {
+                'queue': self.rpc_queue.queue,
+                'exchange': 'pinger',
+                'key': 'all.#'
+            }
         ]
         amqpconfiguration.ensure_bindings(self.channel, bindings)
         self.listener = listener.AMQPListener(connection, self.rpc_queue.queue, observer)
@@ -56,7 +59,7 @@ class Pinger(Greenlet):
         self.amqp = PingerAMQPManager(connection, self)
 
     def handle_message(self, message):
-        if message.routing_key == 'pinger.exit':
+        if message.routing_key.endswith('pinger.exit'):
             #self.conn.connection.close()
             self.event.set()
 

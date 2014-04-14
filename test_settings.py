@@ -26,20 +26,42 @@ def on_connect(conn):
                                     no_local=False,
                                     no_ack=False,
                                     exclusive=False,
-                                    arguments={}
+                                    arguments={},
+                                    callback=on_rpc_message
                                     )
-        # callback=on_rpc_message
 
+        # settings = {
+        #     'key': 'test_key',
+        #     'value': 'hello, world'
+        # }
+        # settingsObj = json.dumps(settings)
+        # channel.basic_publish(
+        #         exchange='settings',
+        #         routing_key='all.setting.set',
+        #         body=settingsObj,
+        #         headers={
+        #             'delivery_mode': 2,
+        #         }
+        #     )
+
+        settings = {
+            'key': 'test_key',
+        }
+        settingsObj = json.dumps(settings)
         channel.basic_publish(
-                exchange='manage',
-                routing_key='all.simple.settings',
-                body='',
+                exchange='settings',
+                routing_key='all.setting.get',
+                body=settingsObj,
                 headers={
                     'delivery_mode': 2,
+                    'reply_to': rpc_queue.queue,
+                    'correlation_id': corr_id
                 }
             )
-        #while True:
-        #    gevent.sleep(1)
+
+        while True:
+            gevent.sleep(1)
+
     conn.close()
 
 if __name__ == '__main__':

@@ -12,7 +12,7 @@ from command.loader import Loader
 #         if f:
 #             if message.body:
 #                 args = json.loads(message.body)
-#                 return f(*args)
+#                 return f(**args)
 #             else:
 #                 return f()
 #         else:
