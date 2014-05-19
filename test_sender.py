@@ -1,9 +1,14 @@
 import os
 import json
+import logging
 import uuid
 import gevent
 
 from nucleon.amqp import Connection
+
+logging.basicConfig()
+logger = logging.getLogger('test_app')
+logger.setLevel(logging.DEBUG)
 
 
 conn = Connection(
@@ -19,6 +24,7 @@ def on_connect(conn):
             'filter': []
         }
         def on_rpc_message(message):
+            logger.debug(message.body)
             pass
         corr_id = str(uuid.uuid4())
         rpc_queue = channel.queue_declare(exclusive=True)
@@ -26,20 +32,30 @@ def on_connect(conn):
                                     no_local=False,
                                     no_ack=False,
                                     exclusive=False,
-                                    arguments={}
+                                    arguments={},
+                                    callback=on_rpc_message
                                     )
-        # callback=on_rpc_message
-
+        # channel.basic_publish(
+        #         exchange='manage',
+        #         routing_key='all.simple.settings',
+        #         body='',
+        #         headers={
+        #             'delivery_mode': 2,
+        #         }
+        #     )
         channel.basic_publish(
                 exchange='manage',
-                routing_key='all.simple.settings',
+                routing_key='all.status.get',
                 body='',
                 headers={
                     'delivery_mode': 2,
+                    'reply_to': rpc_queue.queue,
+                    'correlation_id': corr_id
                 }
             )
-        #while True:
-        #    gevent.sleep(1)
+
+        while True:
+            gevent.sleep(1)
     conn.close()
 
 if __name__ == '__main__':

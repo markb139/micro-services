@@ -1,34 +1,31 @@
-import json
 import logging
-from amqp import amqpmanager, listener
-from command.loader import Loader
+from amqp.appmanager import AppManager
+from info import info
+import socket
 
 logger = logging.getLogger('microservices.apps.manager')
 
 MODULE_PATH = 'apps.manager.commands'
 
-class ManagerApp(object):
+class ManagerApp(AppManager):
     def __init__(self,connection):
-        self.loader = Loader()
-        self.loader.scan(MODULE_PATH)
-        #self.amqp = amqpmanager.AMQPManager(connection, self)
-        #self.listener = listener.AMQPListener(connection, 'manage_q', self)
-        self.amqp = amqpmanager.AMQPUniqueManager(connection,'manage', self)
+        super(ManagerApp, self).__init__(MODULE_PATH, connection)
+        info['id'] = self.amqp.id
+        info['hostname'] = socket.gethostname()
+        bindings = [{
+            'observer': self,
+            'exchange': 'manage',
+            'key' : self.amqp.id + '.#'
+        },
+        {
+            'observer': self,
+            'exchange': 'manage',
+            'key' : 'all.#'
+        }]
+        self.amqp.bind('manage', bindings)
+        self.amqp.channel.basic_publish(
+                exchange='manage',
+                routing_key='manager.' + self.amqp.id + '.online',
+                body='',
+            )
 
-
-    def handle_message(self, message):
-        logger.debug("message key [%s] body [%s]" % (message.routing_key,message.body))
-        keys = message.routing_key.split('.')
-        if keys[0] == 'all' or keys[0] == self.amqp.id:
-            route = ".".join(keys[1:])
-        else:
-            raise Exception("route not found [%s]" % message.routing_key.split)
-        f = self.loader.handlers.get(route,None)
-        if f:
-            if message.body:
-                args = json.loads(message.body)
-                return f(**args)
-            else:
-                return f()
-        else:
-            raise Exception("Couldn't find handler")

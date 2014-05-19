@@ -59,10 +59,12 @@ class AMQPUniqueManager(object):
     """ amqp manager for the pinger app
     sets up an exclusive queue for an instance and binds it to the pinger exchange
     """
-    def __init__(self, connection, exchange, observer):
+    def __init__(self, connection):
         self.id = str(uuid.uuid4())
+        self.connection = connection
         self.channel = connection.allocate_channel()
-        self.rpc_queue = self.rpc_queue = self.channel.queue_declare(exclusive=True)
+
+    def bind(self,exchange, bindings):
         exchanges = [{
                 'name' : exchange,
                 'type' : 'topic',
@@ -71,23 +73,12 @@ class AMQPUniqueManager(object):
             },
         ]
         amqpconfiguration.ensure_exchanges(self.channel,exchanges)
-        bindings = [{
-                'queue': self.rpc_queue.queue,
-                'exchange': exchange,
-                'key': self.id + '.#'
-            },
-            {
-                'queue': self.rpc_queue.queue,
-                'exchange': exchange,
-                'key': 'all.#'
-            }
-        ]
-        amqpconfiguration.ensure_bindings(self.channel, bindings)
-        self.listener = listener.AMQPListener(connection, self.rpc_queue.queue, observer)
-
+        for binding in bindings:
+            queue = self.channel.queue_declare(exclusive=True)
+            binding['queue'] = queue.queue
+            amqpconfiguration.ensure_bindings(self.channel, [binding])
+            self.listener = listener.AMQPListener(self.connection, queue.queue, binding['observer'])
 
     def close(self):
-        #self.listener.close()
-        #self.rpc_queue.close()
         self.channel.close()
 
