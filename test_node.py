@@ -1,5 +1,3 @@
-import gevent.monkey
-gevent.monkey.patch_all()
 from amqp import connection
 from apps.manager import manager
 import logging
@@ -21,9 +19,7 @@ class Manager(object):
             conn.connection.close()
 
     def on_connect(self, connection):
-        apps_to_start = [
-            'apps.managementsite.manager'
-        ]
+        apps_to_start = []
         self.manager = manager.ManagerApp(connection, apps_to_start)
 
 if __name__ == '__main__':

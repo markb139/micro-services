@@ -1,7 +1,6 @@
 import json
 from command.loader import Loader
 from amqp import amqpmanager
-
 import logging
 
 logger = logging.getLogger('microservices.appmanager')
@@ -11,7 +10,6 @@ class AppManager(object):
         self.loader = Loader()
         self.loader.scan(path)
         self.amqp = amqpmanager.AMQPUniqueManager(connection)
-
 
     def handle_message(self, message):
         logger.debug("message key [%s] body [%s]" % (message.routing_key,message.body))

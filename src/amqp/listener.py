@@ -1,6 +1,7 @@
 import json
 import logging
 import nucleon.amqp.exceptions
+from nucleon.amqp import channels
 
 logger = logging.getLogger('microservices.amqp.listener')
 
@@ -23,6 +24,8 @@ class AMQPListener(object):
     def on_message(self, message):
         if type(message) == nucleon.amqp.exceptions.ConnectionError:
             return
+        elif type(message) == nucleon.amqp.exceptions.ChannelClosed:
+            return
         try:
             ret = self.observer.handle_message(message)
             if message.headers.get('reply_to',None):
@@ -36,4 +39,5 @@ class AMQPListener(object):
 
             message.ack()
         except Exception as err:
+            logger.error(err)
             message.reject(requeue=False)

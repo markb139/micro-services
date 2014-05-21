@@ -1,0 +1,23 @@
+<!doctype html>
+<head>
+    <title>Microservices Management Site</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='mustache.js') }}"></script>
+    <script src="{{ url_for('static', filename='lpoll.js') }}"></script>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    {% raw %}
+    <script id="valueTpl" type="text/template">
+        {{#contents}}
+        <div id="{{id}}">
+        <h1>Application: {{name}}</h1>
+        <h1>ID: {{id}}</h1>
+        <textarea id="tx-{{id}}"></textarea>
+        <button id="butt-{{id}}">Send</button>
+        </div>
+        {{/contents}}
+    </script>
+    {% endraw %}
+</head>
+<div id='updated'>UPDATED</div>
+<div id='contents'></div>
