@@ -40,9 +40,16 @@ class Site(Greenlet):
 
         @app.route('/updated', methods=['GET'])
         def updated():
-            self.event.wait(5.0)
-            self.event.clear()
-            return 'changed!'
+            changed = self.event.wait(5.0)
+            if changed:
+                self.event.clear()
+                return 'changed'
+            else:
+                return 'timeout'
+
+        @app.route('/send', methods=['POST'])
+        def send():
+            return 'OK'
 
         self.new_data = False
         http_server = WSGIServer(('', 5000), app)

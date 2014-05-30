@@ -9,11 +9,20 @@
     {% raw %}
     <script id="valueTpl" type="text/template">
         {{#contents}}
-        <div id="{{id}}">
-        <h1>Application: {{name}}</h1>
-        <h1>ID: {{id}}</h1>
-        <textarea id="tx-{{id}}"></textarea>
-        <button id="butt-{{id}}">Send</button>
+        <div id="{{id}}" style="max-width: 1200px; padding: 50px; border-width: 10px; margin: 20px auto">
+            <div>
+                <h1>Application: {{name}}</h1>
+                <h1>ID: {{id}}</h1>
+                <div id="key-{{id}}" style="float: left">
+                    <p>Routing key</p>
+                    <textarea id="tx-{{id}}"></textarea>
+                </div>
+                <div id="body-{{id}}" style="float: left">
+                    <p>Message</p>
+                    <textarea id="msg-{{id}}"></textarea>
+                </div>
+                <button id="butt-{{id}}" onclick="buttonclicked('{{id}}')">Send</button>
+            </div>
         </div>
         {{/contents}}
     </script>

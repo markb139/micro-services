@@ -23,12 +23,16 @@ function wait_for_update() {
     if (!waiting_for_update) {
         waiting_for_update = true;
         $.ajax({ url: '/updated',
-                 success:  load_data,        // if /update signals results ready, load them!
+                 success: function(data) {
+                   if (data == 'changed') {
+                       load_data();
+                   }
+                 },
                  complete: function () {
                     waiting_for_update = false;
                     wait_for_update(); // if the wait_for_update poll times out, rerun
                  },
-                 timeout:  LONG_POLL_DURATION,
+                 timeout:  LONG_POLL_DURATION
                });
     }
 
@@ -57,6 +61,21 @@ function display_data(data) {
         $("#updated").fadeIn('fast');
         setTimeout(function() {  $("#updated").fadeOut('slow');  }, 2500);
     }
+}
+
+function buttonclicked(id) {
+    var sel = "textarea#tx-" + id
+    var route = id + "." + $(sel).val()
+    sel = "textarea#msg-" + id
+    var body = $(sel).val()
+
+    $.ajax({
+        url: '/send',
+        type: 'POST',
+        error: function(data){
+            alert(data);
+        }
+    });
 }
 
 $(document).ready(function() {
