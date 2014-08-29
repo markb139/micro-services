@@ -1,6 +1,6 @@
 import gevent.monkey
 gevent.monkey.patch_all()
-from amqp import connection
+from amqp import connection, sender
 from apps.manager import manager
 import logging
 
@@ -24,6 +24,7 @@ class Manager(object):
         apps_to_start = [
             'apps.managementsite.manager'
         ]
+        s = sender.AMQPSender(connection)
         self.manager = manager.ManagerApp(connection, apps_to_start)
 
 if __name__ == '__main__':

@@ -68,10 +68,13 @@ function buttonclicked(id) {
     var route = id + "." + $(sel).val()
     sel = "textarea#msg-" + id
     var body = $(sel).val()
+    var sendData = {key: route, body: body};
 
     $.ajax({
         url: '/send',
         type: 'POST',
+        data : JSON.stringify(sendData, null, '\t'),
+        contentType: 'application/json;charset=UTF-8',
         error: function(data){
             alert(data);
         }

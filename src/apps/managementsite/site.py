@@ -2,8 +2,9 @@ from gevent import Greenlet
 from gevent.event import Event
 import gevent
 from flask import Flask
-from flask import render_template, jsonify
+from flask import render_template, jsonify, request
 from gevent.wsgi import WSGIServer
+from amqp import sender
 import time
 
 import logging
@@ -49,6 +50,9 @@ class Site(Greenlet):
 
         @app.route('/send', methods=['POST'])
         def send():
+            s = sender.AMQPSender()
+            req = request
+            s.send(exchange='manage',key=request.json['key'],object=request.json['body'])
             return 'OK'
 
         self.new_data = False
